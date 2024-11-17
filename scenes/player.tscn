@@ -2,8 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/Player.gd" id="1_aoxg3"]
 [ext_resource type="Texture2D" uid="uid://da8urgbqpfmnb" path="res://assets/texture/snow_02_diff_4k.png" id="2_ir2mx"]
-
-[sub_resource type="CapsuleMesh" id="CapsuleMesh_xc2g5"]
+[ext_resource type="PackedScene" uid="uid://woaiehracwn5" path="res://untitled.glb" id="3_q8eyh"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wydro"]
 
@@ -44,10 +43,6 @@ fill_to = Vector2(0.57485, 0.449102)
 [node name="Player" type="CharacterBody3D"]
 script = ExtResource("1_aoxg3")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-mesh = SubResource("CapsuleMesh_xc2g5")
-
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_wydro")
@@ -58,8 +53,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.67939, 0)
 [node name="Camera3D" type="Camera3D" parent="Head"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00877738, -0.13715, -0.502297)
 
+[node name="untitled" parent="Head/Camera3D" instance=ExtResource("3_q8eyh")]
+transform = Transform3D(0.56278, 0, 0, 0, 0.566154, 0, 0, 0, 0.605954, 0.0441365, -1.06287, 0.499605)
+
 [node name="HeldSnowball" type="MeshInstance3D" parent="Head/Camera3D"]
-transform = Transform3D(0.205658, 0, 0, 0, 0.205954, 0, 0, 0, 0.204255, 0.40166, -0.214067, -0.495704)
+transform = Transform3D(0.205658, 0, 0, 0, 0.205954, 0, 0, 0, 0.204255, -0.599113, -0.54289, -0.063706)
 mesh = SubResource("SphereMesh_d7itl")
 skeleton = NodePath("../../..")
 
@@ -103,3 +101,5 @@ grow_vertical = 2
 texture = SubResource("GradientTexture2D_y2jd5")
 
 [connection signal="timeout" from="SnowballReloadTimer" to="." method="_on_snowball_reload_timer_timeout"]
+
+[editable path="Head/Camera3D/untitled"]
