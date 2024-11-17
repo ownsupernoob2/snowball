@@ -1,0 +1,105 @@
+[gd_scene load_steps=10 format=3 uid="uid://3vft8x83weke"]
+
+[ext_resource type="Script" path="res://scripts/Player.gd" id="1_aoxg3"]
+[ext_resource type="Texture2D" uid="uid://da8urgbqpfmnb" path="res://assets/texture/snow_02_diff_4k.png" id="2_ir2mx"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_xc2g5"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wydro"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ry7fp"]
+albedo_texture = ExtResource("2_ir2mx")
+
+[sub_resource type="SphereMesh" id="SphereMesh_d7itl"]
+material = SubResource("StandardMaterial3D_ry7fp")
+radial_segments = 74
+rings = 6
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_qol2y"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath("Head/Camera3D:rotation")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+properties/3/path = NodePath("Head/Camera3D/Snowballpos:position")
+properties/3/spawn = true
+properties/3/replication_mode = 1
+properties/4/path = NodePath("MeshInstance3D:position")
+properties/4/spawn = true
+properties/4/replication_mode = 1
+
+[sub_resource type="Gradient" id="Gradient_qr6t5"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_y2jd5"]
+gradient = SubResource("Gradient_qr6t5")
+fill = 1
+fill_from = Vector2(0.461078, 0.508982)
+fill_to = Vector2(0.57485, 0.449102)
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_aoxg3")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+mesh = SubResource("CapsuleMesh_xc2g5")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_wydro")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.67939, 0)
+
+[node name="Camera3D" type="Camera3D" parent="Head"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00877738, -0.13715, -0.502297)
+
+[node name="HeldSnowball" type="MeshInstance3D" parent="Head/Camera3D"]
+transform = Transform3D(0.205658, 0, 0, 0, 0.205954, 0, 0, 0, 0.204255, 0.40166, -0.214067, -0.495704)
+mesh = SubResource("SphereMesh_d7itl")
+skeleton = NodePath("../../..")
+
+[node name="Snowballpos" type="Marker3D" parent="Head/Camera3D"]
+transform = Transform3D(0.950867, 0, 0, 0, 1, 0, 0, 0, 0.278048, -0.0437156, -0.0473531, -0.815726)
+gizmo_extents = 0.0
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_qol2y")
+
+[node name="SnowballReloadTimer" type="Timer" parent="."]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ProgressBar" type="ProgressBar" parent="CanvasLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -32.0
+offset_top = -37.0
+offset_right = 32.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+max_value = 1.0
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -30.0
+offset_top = -32.0
+offset_right = 34.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = SubResource("GradientTexture2D_y2jd5")
+
+[connection signal="timeout" from="SnowballReloadTimer" to="." method="_on_snowball_reload_timer_timeout"]

@@ -1,0 +1,118 @@
+[gd_scene load_steps=15 format=3 uid="uid://cnp6o8e527jpi"]
+
+[ext_resource type="Script" path="res://scripts/snowball.gd" id="1_bbw2c"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_3o2mw"]
+radial_segments = 74
+rings = 6
+
+[sub_resource type="Curve" id="Curve_x2wds"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.183908, 0.846154), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_m33h4"]
+curve = SubResource("Curve_x2wds")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_ehq8s"]
+particle_flag_align_y = true
+spread = 180.0
+initial_velocity_min = 12.0
+initial_velocity_max = 14.0
+scale_min = 0.05
+scale_max = 0.5
+scale_curve = SubResource("CurveTexture_m33h4")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pp741"]
+albedo_color = Color(0.808998, 0.808998, 0.808998, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_jx7ut"]
+material = SubResource("StandardMaterial3D_pp741")
+top_radius = 0.05
+bottom_radius = 0.0
+height = 0.5
+radial_segments = 16
+
+[sub_resource type="Curve" id="Curve_v84ru"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.652174, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 3
+
+[sub_resource type="CurveTexture" id="CurveTexture_pvs71"]
+curve = SubResource("Curve_v84ru")
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_x07qg"]
+emission_shape = 1
+emission_sphere_radius = 1.0
+direction = Vector3(0, -1, 0)
+spread = 90.0
+initial_velocity_min = 2.0
+initial_velocity_max = 4.0
+gravity = Vector3(0, 5, 0)
+scale_min = 0.05
+scale_max = 0.3
+scale_curve = SubResource("CurveTexture_pvs71")
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_wmulx"]
+transparency = 1
+
+[sub_resource type="SphereMesh" id="SphereMesh_rqitd"]
+material = SubResource("StandardMaterial3D_wmulx")
+radial_segments = 8
+rings = 4
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_7etsr"]
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_yqw0k"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 1
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 1
+properties/2/path = NodePath(".:linear_velocity")
+properties/2/spawn = true
+properties/2/replication_mode = 1
+
+[node name="Snowball" type="RigidBody3D"]
+input_capture_on_drag = true
+script = ExtResource("1_bbw2c")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.205658, 0, 0, 0, 0.205954, 0, 0, 0, 0.204255, 0, 0, 0)
+mesh = SubResource("SphereMesh_3o2mw")
+
+[node name="Debris" type="GPUParticles3D" parent="."]
+transform = Transform3D(0.168841, 0, 0, 0, 0.140413, 0, 0, 0, 0.147281, 0, 0, 0)
+emitting = false
+amount = 40
+lifetime = 0.5
+one_shot = true
+explosiveness = 1.0
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_ehq8s")
+draw_pass_1 = SubResource("CylinderMesh_jx7ut")
+
+[node name="Smoke" type="GPUParticles3D" parent="."]
+transform = Transform3D(0.211956, 0, 0, 0, 0.177698, 0, 0, 0, 0.178477, 0, 0, 0)
+emitting = false
+amount = 12
+lifetime = 0.7
+one_shot = true
+explosiveness = 1.0
+fixed_fps = 60
+process_material = SubResource("ParticleProcessMaterial_x07qg")
+draw_pass_1 = SubResource("SphereMesh_rqitd")
+
+[node name="Area3D" type="Area3D" parent="."]
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Area3D"]
+transform = Transform3D(0.206162, 0, 0, 0, 0.206162, 0, 0, 0, 0.206162, 0, 0, 0)
+shape = SubResource("SphereShape3D_7etsr")
+
+[node name="CleanupTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_yqw0k")
+
+[connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]
+[connection signal="timeout" from="CleanupTimer" to="." method="_on_cleanup_timer_timeout"]
